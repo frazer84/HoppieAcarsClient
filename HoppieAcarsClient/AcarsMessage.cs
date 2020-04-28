@@ -2,11 +2,29 @@
 
 namespace HoppieAcarsClient
 {
+    /// <summary>
+    /// Class containing a single ACARS message
+    /// </summary>
     public class AcarsMessage
     {
+        /// <summary>
+        /// Callsign from which the message was recieved
+        /// </summary>
         public string From;
+
+        /// <summary>
+        /// Callsign to which the message was addressed
+        /// </summary>
         public string To;
+
+        /// <summary>
+        /// Type of ACARS message
+        /// </summary>
         public MessageType Type;
+
+        /// <summary>
+        /// Data contained in the message
+        /// </summary>
         public string Data;
 
         public AcarsMessage(

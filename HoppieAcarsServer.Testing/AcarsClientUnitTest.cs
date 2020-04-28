@@ -64,7 +64,7 @@ namespace HoppieAcarsClient.Testing
         }
 
         [Fact]
-        public async void TestRecieveAcarsMessage()
+        public async void TestRecieveMultipleMixedAcarsMessages()
         {
             var acarsClient = new AcarsClient(
                 CALLSIGN, 
@@ -89,21 +89,75 @@ namespace HoppieAcarsClient.Testing
             Assert.Equal(AcarsClient.MessageType.Telex, result[3].Type);
             Assert.Equal(CALLSIGN, result[3].To);
             Assert.Equal("TEST", result[3].Data);
+        }
 
-            /*
-            // also check the 'http' call was like we expected it
-            var expectedUri = new Uri("http://test.com/api/test/whatever");
-
-            handlerMock.Protected().Verify(
-               "SendAsync",
-               Times.Exactly(1), // we expected a single external request
-               ItExpr.Is<HttpRequestMessage>(req =>
-                  req.Method == HttpMethod.Get  // we expected a GET request
-                  && req.RequestUri == expectedUri // to this uri
-               ),
-               ItExpr.IsAny<CancellationToken>()
+        [Fact]
+        public async void TestRecieveSingleCpdlcAcarsMessage()
+        {
+            var acarsClient = new AcarsClient(
+                CALLSIGN,
+                LOGON_SECRET,
+                false,
+                GetMockedHttpClient(HttpStatusCode.OK, ACARS_MESSAGES_SINGLE_CPDLC)
             );
-            */
+
+            // ACT
+            AcarsMessage[] result = await acarsClient.GetPendingMessages().ConfigureAwait(false);
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.True(result.Length == 1);
+
+            Assert.Equal("SWSM", result[0].From);
+            Assert.Equal(AcarsClient.MessageType.CPDLC, result[0].Type);
+            Assert.Equal(CALLSIGN, result[0].To);
+            Assert.Equal("/data2/14//R/AT @ELTOK@ EXPECT @300K", result[0].Data);
+        }
+
+        [Fact]
+        public async void TestRecieveSingleTelexAcarsMessage()
+        {
+            var acarsClient = new AcarsClient(
+                CALLSIGN,
+                LOGON_SECRET,
+                false,
+                GetMockedHttpClient(HttpStatusCode.OK, ACARS_MESSAGES_SINGLE_TELEX)
+            );
+
+            // ACT
+            AcarsMessage[] result = await acarsClient.GetPendingMessages().ConfigureAwait(false);
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.True(result.Length == 1);
+
+            Assert.Equal("SWSM", result[0].From);
+            Assert.Equal(AcarsClient.MessageType.Telex, result[0].Type);
+            Assert.Equal(CALLSIGN, result[0].To);
+            Assert.Equal("TEST", result[0].Data);
+        }
+
+        [Fact]
+        public async void TestRecieveAcarsMessageServerError()
+        {
+            var acarsClient = new AcarsClient(
+                CALLSIGN,
+                LOGON_SECRET,
+                false,
+                GetMockedHttpClient(HttpStatusCode.InternalServerError, "")
+            );
+
+            // ACT
+            try
+            {
+                AcarsMessage[] result = await acarsClient.GetPendingMessages().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // ASSERT
+                Assert.NotNull(ex);
+                Assert.Equal("Error communicating with Hoppie server over HTTP: Response status code does not indicate success: 500 (Internal Server Error).", ex.Message);
+            }
         }
     }
 }

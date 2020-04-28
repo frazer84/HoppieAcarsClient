@@ -18,16 +18,28 @@ namespace HoppieAcarsClient
 
         HttpClient httpClient;
         Thread messagePollThread;
-        private Regex messageRegex = new Regex(@"\{(\S*)\s(\S*)\s\{(\/\S*\/|(TELEX))([^\}]*)\}\}");
+        private Regex messageRegex = new Regex(@"\{(\S*)\s(\S*)\s\{(\/\S*\/|TELEX\s)([^\}]*)\}\}");
 
+        /// <summary>
+        /// Event is triggered when automatic polling of new messages gets at least one message
+        /// </summary>
         public event EventHandler<AcarsMessageEventArgs> MessageRecieved;
+
+        /// <summary>
+        /// List of all messages recieved since client instance was created
+        /// </summary>
+        public List<AcarsMessage> MessageHistory
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="callsign">The callsign to be used then sending and recieving messages</param>
         /// <param name="logonSecret">The hopplie secret token you get when registering on www.hoppie.nl</param>
-        /// <param name="pollForMessages">Controls if the acars client should start listening to new messaged automatically</param>
+        /// <param name="pollForMessages">Controls if the acars client should start listening to new messaged automatically, triggering the MessageRecieved event</param>
         /// <param name="httpClient">ONLY FOR UNIT TEST USE</param>
         public AcarsClient(string callsign, string logonSecret, bool pollForMessages = true, HttpClient httpClient = null)
         {
@@ -70,7 +82,7 @@ namespace HoppieAcarsClient
             Peek
         }
 
-        Dictionary<MessageType, string> messageTypeStrings = new Dictionary<MessageType, string>
+        private readonly Dictionary<MessageType, string> messageTypeStrings = new Dictionary<MessageType, string>
         {
             { MessageType.CPDLC, "cpdlc" },
             { MessageType.DataRequest, "datareq" },
@@ -142,9 +154,12 @@ namespace HoppieAcarsClient
                     string data = match.Groups[3].Value;
                     if (messageType == MessageType.CPDLC && match.Groups.Count > 3)
                         data += match.Groups[4].Value;
+                    if(messageType == MessageType.Telex && match.Groups.Count > 3)
+                        data = match.Groups[4].Value;
                     AcarsMessage acarsMessage = new AcarsMessage(match.Groups[1].Value, callsign, messageType, data);
                     messages.Add(acarsMessage);
                 }
+                MessageHistory.AddRange(messages);
                 return messages.ToArray();
             }
             catch (Exception e)
@@ -309,16 +324,16 @@ namespace HoppieAcarsClient
                 else if (response.StartsWith("error"))
                 {
                     string errorMessage = response.Substring(6).Trim('{', '}', ' ');
-                    throw new Exception("Hoppie error: " + errorMessage);
+                    throw new Exception("Hoppie server error: " + errorMessage);
                 }
                 else
                 {
-                    throw new Exception("Unable to get all online callsigns due to invalid or unknown response from Hoppie Server: " + response);
+                    throw new Exception("Got unknown response from Hoppie Server: " + response);
                 }
             }
             catch (HttpRequestException e)
             {
-                throw new Exception("Error communicating with Hoppie server over HTTP.", e);
+                throw new Exception("Error communicating with Hoppie server over HTTP: " + e.Message, e);
             }
         }
 
