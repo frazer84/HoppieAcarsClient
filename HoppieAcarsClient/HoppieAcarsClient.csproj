@@ -8,6 +8,8 @@
     <FileVersion>0.3.0.0</FileVersion>
     <Version>0.3.0-alpha</Version>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <Description>A NuGet package with a client connecting to the ACARS service created and hostied by Hoppie.nl.</Description>
+    <Copyright>Daniel Zarins 2020</Copyright>
   </PropertyGroup>
 
 </Project>
