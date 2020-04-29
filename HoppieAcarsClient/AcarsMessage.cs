@@ -1,4 +1,5 @@
-﻿using static HoppieAcarsClient.AcarsClient;
+﻿using System;
+using static HoppieAcarsClient.AcarsClient;
 
 namespace HoppieAcarsClient
 {
@@ -8,31 +9,46 @@ namespace HoppieAcarsClient
     public class AcarsMessage
     {
         /// <summary>
+        /// When the message was recieved by the client (not when it was created or sent from the sender station)
+        /// </summary>
+        public DateTime RecievedAt { get; private set; }
+
+        /// <summary>
         /// Callsign from which the message was recieved
         /// </summary>
-        public string From;
+        public string From { get; private set; }
 
         /// <summary>
         /// Callsign to which the message was addressed
         /// </summary>
-        public string To;
+        public string To { get; private set; }
 
         /// <summary>
         /// Type of ACARS message
         /// </summary>
-        public MessageType Type;
+        public MessageType Type { get; private set; }
 
         /// <summary>
         /// Data contained in the message
         /// </summary>
-        public string Data;
+        public string Data { get; private set; }
 
+        /// <summary>
+        /// Use to create a generic ACARS message
+        /// </summary>
+        /// <param name="recievedAt">When the message was recieved by the client (not when it was created or sent from the sender station)</param>
+        /// <param name="from">Callsign from which the message was recieved</param>
+        /// <param name="to">Callsign to which the message was addressed</param>
+        /// <param name="type">Type of ACARS message</param>
+        /// <param name="data">Data contained in the message</param>
         public AcarsMessage(
+            DateTime recievedAt,
             string from,
             string to,
             MessageType type,
             string data)
         {
+            RecievedAt = recievedAt;
             From = from;
             To = to;
             Type = type;

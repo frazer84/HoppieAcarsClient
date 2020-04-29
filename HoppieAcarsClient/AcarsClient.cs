@@ -12,13 +12,17 @@ namespace HoppieAcarsClient
     public class AcarsClient : IDisposable
     {
         private const string HOPPIE_URL_CONNECT = "https://www.hoppie.nl/acars/system/connect.html";
-        private string callsign;
         private string logonSecret = null;
         private int messageCounter = 0;
 
-        HttpClient httpClient;
-        Thread messagePollThread;
+        private HttpClient httpClient;
+        private Thread messagePollThread;
         private Regex messageRegex = new Regex(@"\{(\S*)\s(\S*)\s\{(\/\S*\/|TELEX\s)([^\}]*)\}\}");
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Callsign { get; private set; }
 
         /// <summary>
         /// Event is triggered when automatic polling of new messages gets at least one message
@@ -48,7 +52,7 @@ namespace HoppieAcarsClient
             if (callsign == null || callsign.Length < 3)
                 throw new ArgumentException("Invalid callsign.");
 
-            this.callsign = callsign;
+            Callsign = callsign;
             this.logonSecret = logonSecret;
 
             if (httpClient != null)
@@ -63,6 +67,7 @@ namespace HoppieAcarsClient
                 this.httpClient.Timeout = TimeSpan.FromSeconds(5);
             }
 
+            MessageHistory = new List<AcarsMessage>();
             messagePollThread = new Thread(MessagePollRunner);
             if(pollForMessages)
                 messagePollThread.Start();
@@ -94,11 +99,6 @@ namespace HoppieAcarsClient
             { MessageType.Progress, "progress" },
             { MessageType.Telex, "telex" }
         };
-
-        public enum CPDLCMessage
-        {
-            REQUEST_LOGON
-        }
         #endregion
 
         #region Message polling thread
@@ -125,13 +125,31 @@ namespace HoppieAcarsClient
 
         private async Task<AcarsMessage[]> pollMessages()
         {
-            return await GetPendingMessages(callsign).ConfigureAwait(false);
+            return await GetPendingMessages(Callsign).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Start polling for messages every 5 seconds
+        /// </summary>
+        public void StartPolling()
+        {
+            if(messagePollThread.ThreadState != ThreadState.Running)
+                messagePollThread.Start();
+        }
+
+        /// <summary>
+        /// Stop polling for new messages
+        /// </summary>
+        public void StopPolling()
+        {
+            if (messagePollThread.ThreadState == ThreadState.Running)
+                messagePollThread.Abort();
         }
         #endregion
 
         public async Task<AcarsMessage[]> GetPendingMessages()
         {
-            return await GetPendingMessages(callsign).ConfigureAwait(false);
+            return await GetPendingMessages(Callsign).ConfigureAwait(false);
         }
 
         public async Task<AcarsMessage[]> GetPendingMessages(string callsign)
@@ -156,8 +174,17 @@ namespace HoppieAcarsClient
                         data += match.Groups[4].Value;
                     if(messageType == MessageType.Telex && match.Groups.Count > 3)
                         data = match.Groups[4].Value;
-                    AcarsMessage acarsMessage = new AcarsMessage(match.Groups[1].Value, callsign, messageType, data);
-                    messages.Add(acarsMessage);
+
+                    if (messageType == MessageType.CPDLC)
+                    {
+                        CpdlcAcarsMessage acarsMessage = new CpdlcAcarsMessage(DateTime.Now, match.Groups[1].Value, callsign, data);
+                        messages.Add(acarsMessage);
+                    }
+                    else
+                    {
+                        AcarsMessage acarsMessage = new AcarsMessage(DateTime.Now, match.Groups[1].Value, callsign, messageType, data);
+                        messages.Add(acarsMessage);
+                    }
                 }
                 MessageHistory.AddRange(messages);
                 return messages.ToArray();
@@ -194,13 +221,18 @@ namespace HoppieAcarsClient
         }
 
         public async Task<string> SendCPDLC(
+            CpdlcAcarsMessage message)
+        {
+            return await SendCPDLC(message.From, message.To, message.RawDataMessage).ConfigureAwait(false);
+        }
+
+        public async Task<string> SendCPDLC(
             string fromCallsign,
             string toCallsign,
-            CPDLCMessage message)
+            string data)
         {
             try
             {
-                string data = getCpdlcData(message);
                 if (data != null)
                 {
                     string response = await sendMessageToHoppie(
@@ -222,32 +254,6 @@ namespace HoppieAcarsClient
             {
                 throw e;
             }
-        }
-
-        private string getCpdlcData(
-            CPDLCMessage message)
-        {
-            string messageString = null;
-            switch (message)
-            {
-                case CPDLCMessage.REQUEST_LOGON:
-                    messageString = "REQUEST LOGON";
-                    break;
-            }
-
-            if (messageString != null)
-            {
-
-                string data = "/data2/0/";
-                if (messageCounter > 0)
-                    data += messageCounter;
-                data += "/Y/";
-                data += messageString;
-                messageCounter++;
-
-                return data;
-            }
-            throw new ArgumentException("Invalid CPDLC message type");
         }
 
         public async Task<string> SendTelex(

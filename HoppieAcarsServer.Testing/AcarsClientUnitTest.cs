@@ -15,7 +15,7 @@ namespace HoppieAcarsClient.Testing
         private const string CALLSIGN = "SAS123";
 
         private const string HOPPIE_CALLSIGNS_ONLINE = "ok { SAS123 SAS321 ESSA_V_TWR ESSA_ATIS }";
-        private const string ACARS_MESSAGES_MULTIPLE_MIXED = "ok {SWSM cpdlc {/data2/14//R/AT @ELTOK@ EXPECT @300K}} {SWSM cpdlc {/data2/15//NE/NEXT DATA AUTHORITY @EDYY}} {SWSM cpdlc {/data2/16//NE/CONFIRM ALTITUDE}} {SWSM telex {TELEX TEST}} {SWSM telex {TELEX TEST}} {SWSM telex {TELEX TEST}} {SWSM cpdlc {/data2/17//WU/CROSS @SPL@ AT @5000}} {SWSM cpdlc {/data2/18//R/ATIS @T}}";
+        private const string ACARS_MESSAGES_MULTIPLE_MIXED = "ok {SWSM cpdlc {/data2/14//R/AT @ELTOK@ EXPECT @300K}} {SWSM cpdlc {/data2/15//NE/NEXT DATA AUTHORITY @EDYY}} {SWSM cpdlc {/data2/16//NE/CONFIRM ALTITUDE}} {SWSM telex {TELEX TEST}} {SWSM cpdlc {/data2/10/9/NE/LOGON ACCEPTED}} {SWSM telex {TELEX TEST}} {SWSM telex {TELEX TEST}} {SWSM cpdlc {/data2/17//WU/CROSS @SPL@ AT @5000}} {SWSM cpdlc {/data2/18//R/ATIS @T}}";
         private const string ACARS_MESSAGES_SINGLE_TELEX = "ok {SWSM telex {TELEX TEST}}";
         private const string ACARS_MESSAGES_SINGLE_CPDLC = "ok {SWSM cpdlc {/data2/14//R/AT @ELTOK@ EXPECT @300K}}";
 
@@ -78,13 +78,26 @@ namespace HoppieAcarsClient.Testing
 
             // ASSERT
             Assert.NotNull(result);
-            Assert.True(result.Length == 8);
+            Assert.True(result.Length == 9);
 
+            Assert.True(result[0].RecievedAt < DateTime.Now);
             Assert.Equal("SWSM", result[0].From);
             Assert.Equal(AcarsClient.MessageType.CPDLC, result[0].Type);
             Assert.Equal(CALLSIGN, result[0].To);
             Assert.Equal("/data2/14//R/AT @ELTOK@ EXPECT @300K", result[0].Data);
 
+            Assert.IsType<CpdlcAcarsMessage>(result[4]);
+            CpdlcAcarsMessage cpdlcMessage = (CpdlcAcarsMessage)result[4];
+            Assert.True(cpdlcMessage.RecievedAt < DateTime.Now);
+            Assert.Equal("SWSM", cpdlcMessage.From);
+            Assert.Equal(AcarsClient.MessageType.CPDLC, cpdlcMessage.Type);
+            Assert.Equal(CALLSIGN, cpdlcMessage.To);
+            Assert.Equal("/data2/10/9/NE/LOGON ACCEPTED", cpdlcMessage.Data);
+            Assert.Equal("LOGON ACCEPTED", cpdlcMessage.Message);
+            Assert.Equal(10, cpdlcMessage.MessageCount);
+            Assert.Equal(CpdlcAcarsMessage.ResponseAttribute.UPLINK_NOT_ENABLED, cpdlcMessage.ResponseType);
+
+            Assert.True(result[3].RecievedAt < DateTime.Now);
             Assert.Equal("SWSM", result[3].From);
             Assert.Equal(AcarsClient.MessageType.Telex, result[3].Type);
             Assert.Equal(CALLSIGN, result[3].To);
