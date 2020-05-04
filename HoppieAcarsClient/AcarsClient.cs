@@ -73,6 +73,11 @@ namespace HoppieAcarsClient
                 messagePollThread.Start();
         }
 
+        public void SetCallsign(string callsign)
+        {
+            Callsign = callsign;
+        }
+
         #region Enums
         public enum MessageType
         {
@@ -108,7 +113,7 @@ namespace HoppieAcarsClient
             {
                 try
                 {
-                    AcarsMessage[] messages = await pollMessages();
+                    AcarsMessage[] messages = await pollMessages().ConfigureAwait(false);
                     if(messages != null && messages.Length > 0)
                     {
                         EventHandler<AcarsMessageEventArgs> handler = MessageRecieved;
@@ -358,32 +363,6 @@ namespace HoppieAcarsClient
             queryString.Add("packet", packetData);
             return HOPPIE_URL_CONNECT + "?" + queryString.ToString();
         }
-
-        /*private string getMessageTypeString(MessageType type)
-        {
-            switch(type)
-            {
-                case MessageType.CPDLC:
-                    return "cpdlc";
-                case MessageType.DataRequest:
-                    return "datareq";
-                case MessageType.Peek:
-                    return "peek";
-                case MessageType.Ping:
-                    return "ping";
-                case MessageType.Poll:
-                    return "poll";
-                case MessageType.Position:
-                    return "position";
-                case MessageType.PositionRequest:
-                    return "posreq";
-                case MessageType.Progress:
-                    return "progress";
-                case MessageType.Telex:
-                    return "telex";
-            }
-            throw new NotSupportedException("MessageType " + type.ToString() + " not supported.");
-        }*/
 
         public void Dispose()
         {

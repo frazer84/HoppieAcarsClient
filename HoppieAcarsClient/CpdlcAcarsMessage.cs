@@ -152,6 +152,14 @@ namespace HoppieAcarsClient
             { ResponseAttribute.DOWNLINK_RESPONSE_NOT_REQUIRED, "N" }
         };
 
+        public string ResponseTypeString
+        {
+            get
+            {
+                return responseAttributeStrings[ResponseType];
+            }
+        }
+
         public string RawDataMessage
         {
             get
