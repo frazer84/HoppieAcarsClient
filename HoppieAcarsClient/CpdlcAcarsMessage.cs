@@ -171,13 +171,14 @@ namespace HoppieAcarsClient
         public enum CPDLCUplinkMessageType
         {
             NONE = 0,
-            REQUEST_LOGON,
+            REQUEST_LOGON = 1,
+            LOGOFF = 2,
 
-            WILCO,
-            UNABLE,
-            AFFIRM,
-            NEGATIVE,
-            ROGER
+            RESPONSE_WILCO = 100,
+            RESPONSE_UNABLE = 101,
+            RESPONSE_AFFIRM = 102,
+            RESPONSE_NEGATIVE = 103,
+            RESPONSE_ROGER = 104
         }
 
         public enum ResponseAttribute

@@ -5,11 +5,7 @@ VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HoppieAcarsClient", "HoppieAcarsClient\HoppieAcarsClient.csproj", "{45DCB6FF-0F17-4574-875B-297CB4DD3735}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoppieAcarsClient.Testing", "HoppieAcarsServer.Testing\HoppieAcarsClient.Testing.csproj", "{E0DBED6A-D2D0-4399-B6C7-4157FDB318CE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwesimAcarsServer", "..\..\Swesim\C#-Projects\Boeing 737\SwesimAcarsServer\SwesimAcarsServer.csproj", "{108D01C0-DE2B-4E27-9707-739D128048D9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineATISRequest", "..\..\Swesim\C#-Projects\Boeing 737\OnlineATISRequest\OnlineATISRequest.csproj", "{3C733FF2-F65A-4ED1-BDF6-AADFFDF6A66D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HoppieAcarsClient.Testing", "HoppieAcarsServer.Testing\HoppieAcarsClient.Testing.csproj", "{E0DBED6A-D2D0-4399-B6C7-4157FDB318CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,21 +31,6 @@ Global
 		{E0DBED6A-D2D0-4399-B6C7-4157FDB318CE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E0DBED6A-D2D0-4399-B6C7-4157FDB318CE}.Release|x86.ActiveCfg = Release|Any CPU
 		{E0DBED6A-D2D0-4399-B6C7-4157FDB318CE}.Release|x86.Build.0 = Release|Any CPU
-		{108D01C0-DE2B-4E27-9707-739D128048D9}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{108D01C0-DE2B-4E27-9707-739D128048D9}.Debug|Any CPU.Build.0 = Debug|x86
-		{108D01C0-DE2B-4E27-9707-739D128048D9}.Debug|x86.ActiveCfg = Debug|x86
-		{108D01C0-DE2B-4E27-9707-739D128048D9}.Debug|x86.Build.0 = Debug|x86
-		{108D01C0-DE2B-4E27-9707-739D128048D9}.Release|Any CPU.ActiveCfg = Release|x86
-		{108D01C0-DE2B-4E27-9707-739D128048D9}.Release|x86.ActiveCfg = Release|x86
-		{108D01C0-DE2B-4E27-9707-739D128048D9}.Release|x86.Build.0 = Release|x86
-		{3C733FF2-F65A-4ED1-BDF6-AADFFDF6A66D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C733FF2-F65A-4ED1-BDF6-AADFFDF6A66D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C733FF2-F65A-4ED1-BDF6-AADFFDF6A66D}.Debug|x86.ActiveCfg = Debug|x86
-		{3C733FF2-F65A-4ED1-BDF6-AADFFDF6A66D}.Debug|x86.Build.0 = Debug|x86
-		{3C733FF2-F65A-4ED1-BDF6-AADFFDF6A66D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C733FF2-F65A-4ED1-BDF6-AADFFDF6A66D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C733FF2-F65A-4ED1-BDF6-AADFFDF6A66D}.Release|x86.ActiveCfg = Release|x86
-		{3C733FF2-F65A-4ED1-BDF6-AADFFDF6A66D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
