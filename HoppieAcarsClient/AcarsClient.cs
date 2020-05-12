@@ -117,7 +117,7 @@ namespace HoppieAcarsClient
                     if(messages != null && messages.Length > 0)
                     {
                         EventHandler<AcarsMessageEventArgs> handler = MessageRecieved;
-                        handler?.Invoke(this, new AcarsMessageEventArgs(messages));
+                        handler?.Invoke(this, new AcarsMessageEventArgs(messages, MessageHistory.ToArray()));
                     }
                     Thread.Sleep(5000);
                 }

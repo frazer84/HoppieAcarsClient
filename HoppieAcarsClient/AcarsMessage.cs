@@ -8,6 +8,7 @@ namespace HoppieAcarsClient
     /// </summary>
     public class AcarsMessage
     {
+        public Guid Id { get; private set; }
         /// <summary>
         /// When the message was recieved by the client (not when it was created or sent from the sender station)
         /// </summary>
@@ -53,6 +54,7 @@ namespace HoppieAcarsClient
             To = to;
             Type = type;
             Data = data;
+            Id = Guid.NewGuid();
         }
 
         public override string ToString()
