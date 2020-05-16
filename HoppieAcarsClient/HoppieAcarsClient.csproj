@@ -4,9 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Daniel Zarins</Authors>
-    <AssemblyVersion>0.4.1.0</AssemblyVersion>
-    <FileVersion>0.4.1.0</FileVersion>
-    <Version>0.4.1-alpha</Version>
+    <AssemblyVersion>0.4.2.0</AssemblyVersion>
+    <FileVersion>0.4.2.0</FileVersion>
+    <Version>0.4.2-alpha</Version>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <Description>A NuGet package with a client connecting to the ACARS service created and hostied by Hoppie.nl.</Description>
     <Copyright>Daniel Zarins 2020</Copyright>
