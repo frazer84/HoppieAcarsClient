@@ -121,6 +121,11 @@ namespace HoppieAcarsClient
                     }
                     Thread.Sleep(5000);
                 }
+                catch(TimeoutException)
+                {
+                    Thread.Sleep(1000);
+                    continue;
+                }
                 catch(ThreadAbortException)
                 {
                     return;
@@ -223,6 +228,17 @@ namespace HoppieAcarsClient
             {
                 throw e;
             }
+        }
+
+        /// <summary>
+        /// Returns all callsigns which are 4 characters long and are online
+        /// </summary>
+        /// <returns>List of probable ATC callsigns</returns>
+        public async Task<string[]> GetAllAtcStationsOnline()
+        {
+            string[] response = await GetAllCallsignsOnline().ConfigureAwait(false);
+
+            return response.Where(s => (s.Length == 4 && !s.Any(char.IsDigit))).ToArray();
         }
 
         public async Task<string> SendCPDLC(
@@ -341,6 +357,10 @@ namespace HoppieAcarsClient
                 {
                     throw new Exception("Got unknown response from Hoppie Server: " + response);
                 }
+            }
+            catch(OperationCanceledException oce)
+            {
+                throw new TimeoutException("Request to Hoppie timed out");
             }
             catch (HttpRequestException e)
             {
